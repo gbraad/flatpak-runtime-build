@@ -5,6 +5,9 @@ build_runtime_centos:
     - git clone https://gitlab.com/gbraad/flatpak-centos-runtime.git src --depth 1
     - cd src
     - make
+  artifacts:
+    paths:
+      - src/exportrepo/
 
 build_runtime_opensuse:
   image: registry.gitlab.com/gbraad/opensuse:latest
