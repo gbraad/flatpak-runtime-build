@@ -1,0 +1,16 @@
+build_runtime_centos:
+  image: registry.gitlab.com/gbraad/fedora:24
+  script:
+    - dnf install -y git make sudo rpm-ostree
+    - git clone https://gitlab.com/gbraad/flatpak-centos-runtime.git src --depth 1
+    - cd src
+    - make
+
+build_runtime_opensuse:
+  image: registry.gitlab.com/gbraad/opensuse:latest
+  script:
+    - zypper install -y git make sudo kiwi ostree
+    - git clone https://gitlab.com/gbraad/flatpak-opensuse-runtime.git src --depth 1
+    - cd src
+    - make
+
