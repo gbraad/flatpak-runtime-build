@@ -12,9 +12,11 @@ build_runtime_centos:
 build_runtime_opensuse:
   image: registry.gitlab.com/gbraad/opensuse:42.1
   script:
-    - zypper install -y git make sudo ostree flatpak
-    - zypper ar -f http://download.opensuse.org/repositories/Virtualization:/Appliances:/Builder/openSUSE_Leap_42.1/Virtualization:Appliances:Builder.repo
+    - zypper install -y git make sudo
+    - zypper addrepo -f http://download.opensuse.org/repositories/Virtualization:/Appliances:/Builder/openSUSE_Leap_42.1/Virtualization:Appliances:Builder.repo
     - zypper --no-gpg-checks install -y python3-kiwi
+    - zypper addrepo http://download.opensuse.org/repositories/home:fcrozat:branches:openSUSE:Leap:42.1:Update/standard/home:fcrozat:branches:openSUSE:Leap:42.1:Update.repo
+    - zypper --no-gpg-checks install -y flatpak
     - git clone https://gitlab.com/gbraad/flatpak-opensuse-runtime.git src --depth 1
     - cd src
     - make
