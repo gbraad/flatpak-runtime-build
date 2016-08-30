@@ -1,5 +1,44 @@
+stages:
+  - prepare
+  - build
+
+build_base:
+  stage: prepare
+  image: docker:git
+  services:
+  - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build -t registry.gitlab.com/gbraad/flatpak-runtime-build:latest .
+    - docker push registry.gitlab.com/gbraad/flatpak-runtime-build:latest
+  only:
+    - master
+
+build_runtime_freedesktop:
+  stage: build
+  image: registry.gitlab.com/gbraad/flatpak-runtime-build
+  script:
+    - git clone https://github.com/flatpak/freedesktop-sdk-images.git src --depth 1
+    - cd src
+    - make REPO=exportrepo
+  artifacts:
+    paths:
+      - src/exportrepo
+
+build_runtime_gnome:
+  stage: build
+  image: registry.gitlab.com/gbraad/flatpak-builder-freedesktop
+  script:
+    - git clone https://git.gnome.org/browse/gnome-sdk-images src --depth 1
+    - cd src
+    - make REPO=exportrepo
+  artifacts:
+    paths:
+      - src/exportrepo
+
 build_runtime_centos:
-  image: registry.gitlab.com/gbraad/fedora:24
+  stage: build
+  image: registry.gitlab.com/gbraad/flatpak-runtime-build
   script:
     - dnf install -y git make sudo rpm-ostree flatpak
     - git clone https://gitlab.com/gbraad/flatpak-centos-runtime.git src --depth 1
@@ -10,6 +49,7 @@ build_runtime_centos:
       - src/exportrepo/
 
 build_runtime_opensuse:
+  stage: build
   image: registry.gitlab.com/gbraad/opensuse:42.1
   script:
     - zypper install -y git make sudo
